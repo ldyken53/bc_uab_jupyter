@@ -1,5 +1,3 @@
-# Job submission configuration file
-#
 <%-
   email = ENV['USER']
   if !email.include? '@'
@@ -7,14 +5,8 @@
   end
 -%>
 ---
-# This config comes from below URL
-# https://github.com/OSC/bc_example_jupyter/blob/custom_environment/submit.yml.erb
-# The -C option in the config provided for slurm has been removed because it does
-# not apply to implementation at UAB. We do not use constraint list to be used with -C.
-
 batch_connect:
   template: "basic"
-
 script:
   job_environment:
     USER: "<%= ENV['USER'] %>"
@@ -24,9 +16,9 @@ script:
     - "--mem-per-cpu=<%= bc_num_mems.blank? ? 4 : bc_num_mems.to_i %>G"
     - "--partition=<%= bc_partition %>"
     - "--time=<%= bc_num_hours.blank? ? 1 : bc_num_hours.to_i %>:00:00"
-    - "--job-name=ood-jupyter"
-<%- if bc_partition.include? "pascalnodes" -%>
-    - "--gres=gpu:1"
+    - "--job-name=ood-relion"
+<%- if bc_partition.include? "pascalnodes" or bc_partition.include? "amperenodes" -%>
+    - "--gres=gpu:<%= bc_num_gpus.blank? ? 1 : bc_num_gpus.to_i %>"
 <%- end -%>
 <%- if bc_email_on_started == "1" -%>
     - "--mail-type=BEGIN"
